@@ -1,0 +1,4 @@
+build_obj/
+bin/
+.vscode/
+*.o
