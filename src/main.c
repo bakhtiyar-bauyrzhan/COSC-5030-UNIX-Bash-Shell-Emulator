@@ -9,13 +9,6 @@
 #include <glob.h>
 #include "shell.h"
 
-// void print_prompt();
-// char *read_line(char *line);
-// char **parse_line(char *line);
-// int is_builtin(char *command);
-// int execute_builtin(char *command, char **args);
-// int execute_external(char *command, char **args);
-
 int main()
 {
     char *raw_line = NULL;
