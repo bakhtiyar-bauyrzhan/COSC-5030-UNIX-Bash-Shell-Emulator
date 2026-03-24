@@ -9,8 +9,6 @@
 #include <glob.h>
 #include "shell.h"
 
-# Cole was here
-
 int main()
 {
     char *raw_line = NULL;
