@@ -45,141 +45,142 @@ char *read_line(char *line)
 
 char **parse_line(char *line)
 {
-    char *cpy_line = strdup(line);
-    char *src = cpy_line;
-    char *dst = cpy_line;
-    int single_quote = 0;
-    int double_quote = 0;
-    int backslash = 0;
+    // char *cpy_line = strdup(line);
+    // char *src = cpy_line;
+    // char *dst = cpy_line;
+    // int single_quote = 0;
+    // int double_quote = 0;
+    // int backslash = 0;
 
-    // Process the line character by character
-    while (*src != '\0')
-    {
-        // If we encounter a newline, src reached the end of the line, so we can stop processing
-        if (*src == '\n')
-        {
-            // Replace newline with null terminator and break
-            while (*dst != '\n') {
-                *dst++ = '\0';
-            }
-            *dst = '\0';
-            break;
-        }
-        if ((*src == ' ' || *src == '\t'))
-        {
-            // If we are in quotes, just copy the space/tab
-            if (single_quote || double_quote)
-            {
-                *dst++ = *src++;
-                continue;
-            }
-            // If we are not in quotes, replace the space/tab with a null terminator to split tokens
-            else {
-                *dst++ = '\0';
-                src++;
-                continue;
-            }
-        }
-        else
-        {
-            // If we see a single quote, toggle the single_quote flag
-            if (*src == '\'') {
-                single_quote = !single_quote;
-                src++;
-                continue;
-            }   
-            // If we see a double quote, toggle the double_quote flag
-            else if (*src == '"') {
-                double_quote = !double_quote;
-                src++;
-                continue;
-            }
-
-            // If we see a backslash and we are in quotes, set the backslash flag
-            if (*src == '\\' && (single_quote || double_quote))
-            {
-                backslash = 1;
-                src++;
-                continue;
-            }
-            // If we see a backslash and we are not in quotes, just skip it
-            else if (*src == '\\' && (!single_quote && !double_quote))
-            {
-                src++;
-                continue;
-            }
-
-            // If we see a backslash and the backslash flag is set, copy the next character as is
-            if (backslash)
-            {
-                // if the next character is 'n', combine the backslash and 'n' into a newline character
-                if (*src == 'n' || *src == 't') {
-                    if (*src == 'n') {
-                        *dst++ = '\n';
-                    } else if (*src == 't') {
-                        *dst++ = '\t';
-                    }
-                    src++;
-                    backslash = 0;
-                    continue;
-                }
-                // Otherwise, just copy the backslash and the next character
-                *dst++ = '\\';
-                *dst++ = *src++;
-                backslash = 0;
-                continue;
-            }
-
-            // Otherwise, just copy the character
-            *dst++ = *src++;
-        }
-    }
-
-    // Worst case: every other character is a space, plus one for the command and one for the NULL terminator
-    int bufsize = (strlen(line) / 2) + 2; 
-    int position = 0;
-    char **tokens = malloc(bufsize * sizeof(char *));
-
-    // Split the processed line into tokens based on null terminators
-    for (int i = 0; position < bufsize;)
-    {
-        // Get the length of the next token
-        int token_length = strlen(cpy_line + i);
-        // No more tokens
-        if (token_length == 0) break;
-        // Duplicate the token string and store it in the tokens array
-        tokens[position++] = strdup((cpy_line + i));
-        // Move to the start of the next token (current position + token length + 1 for the null terminator)
-        i += token_length + 1; 
-    }
-
-    // Null-terminate the tokens array
-    tokens[position] = NULL;
-
-    return tokens;
-
-    // int bufsize = 64;
-    // int position = 0;
-    // char **tokens = malloc(bufsize * sizeof(char *));
-    // char *token = strtok(cpy_line, " \t\n'\"");
-    // while (token != NULL)
+    // // Process the line character by character
+    // while (*src != '\0')
     // {
-    //     tokens[position++] = strdup(token);
-
-    //     // If we exceed the buffer, reallocate more memory
-    //     if (position >= bufsize)
+    //     // If we encounter a newline, src reached the end of the line, so we can stop processing
+    //     if (*src == '\n')
     //     {
-    //         bufsize += 64;
-    //         tokens = realloc(tokens, bufsize * sizeof(char *));
+    //         // Replace newline with null terminator and break
+    //         while (*dst != '\n') {
+    //             *dst++ = '\0';
+    //         }
+    //         *dst = '\0';
+    //         break;
     //     }
+    //     if ((*src == ' ' || *src == '\t'))
+    //     {
+    //         // If we are in quotes, just copy the space/tab
+    //         if (single_quote || double_quote)
+    //         {
+    //             *dst++ = *src++;
+    //             continue;
+    //         }
+    //         // If we are not in quotes, replace the space/tab with a null terminator to split tokens
+    //         else {
+    //             *dst++ = '\0';
+    //             src++;
+    //             continue;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // If we see a single quote, toggle the single_quote flag
+    //         if (*src == '\'') {
+    //             single_quote = !single_quote;
+    //             src++;
+    //             continue;
+    //         }   
+    //         // If we see a double quote, toggle the double_quote flag
+    //         else if (*src == '"') {
+    //             double_quote = !double_quote;
+    //             src++;
+    //             continue;
+    //         }
 
-    //     // Next token
-    //     token = strtok(NULL, " \t\n'\"");
+    //         // If we see a backslash and we are in quotes, set the backslash flag
+    //         if (*src == '\\' && (single_quote || double_quote))
+    //         {
+    //             backslash = 1;
+    //             src++;
+    //             continue;
+    //         }
+    //         // If we see a backslash and we are not in quotes, just skip it
+    //         else if (*src == '\\' && (!single_quote && !double_quote))
+    //         {
+    //             src++;
+    //             continue;
+    //         }
+
+    //         // If we see a backslash and the backslash flag is set, copy the next character as is
+    //         if (backslash)
+    //         {
+    //             // if the next character is 'n', combine the backslash and 'n' into a newline character
+    //             if (*src == 'n' || *src == 't') {
+    //                 if (*src == 'n') {
+    //                     *dst++ = '\n';
+    //                 } else if (*src == 't') {
+    //                     *dst++ = '\t';
+    //                 }
+    //                 src++;
+    //                 backslash = 0;
+    //                 continue;
+    //             }
+    //             // Otherwise, just copy the backslash and the next character
+    //             *dst++ = '\\';
+    //             *dst++ = *src++;
+    //             backslash = 0;
+    //             continue;
+    //         }
+
+    //         // Otherwise, just copy the character
+    //         *dst++ = *src++;
+    //     }
     // }
 
+    // // Worst case: every other character is a space, plus one for the command and one for the NULL terminator
+    // int bufsize = (strlen(line) / 2) + 2; 
+    // int position = 0;
+    // char **tokens = malloc(bufsize * sizeof(char *));
+
+    // // Split the processed line into tokens based on null terminators
+    // for (int i = 0; position < bufsize;)
+    // {
+    //     // Get the length of the next token
+    //     int token_length = strlen(cpy_line + i);
+    //     // No more tokens
+    //     if (token_length == 0) break;
+    //     // Duplicate the token string and store it in the tokens array
+    //     tokens[position++] = strdup((cpy_line + i));
+    //     // Move to the start of the next token (current position + token length + 1 for the null terminator)
+    //     i += token_length + 1; 
+    // }
+
+    // // Null-terminate the tokens array
     // tokens[position] = NULL;
-    // free(cpy_line);
+
     // return tokens;
+
+    char *cpy_line = strdup(line);
+    int bufsize = 64;
+    int position = 0;
+    char **tokens = malloc(bufsize * sizeof(char *));
+    char *token = strtok(cpy_line, " \t\n'\"");
+    while (token != NULL)
+    {
+        tokens[position++] = strdup(token);
+
+        // If we exceed the buffer, reallocate more memory
+        if (position >= bufsize)
+        {
+            bufsize += 64;
+            tokens = realloc(tokens, bufsize * sizeof(char *));
+        }
+
+        // Next token
+        token = strtok(NULL, " \t\n'\"");
+    }
+
+    tokens[position] = NULL;
+    free(cpy_line);
+    return tokens;
 }
 
 int is_builtin(char *command)
