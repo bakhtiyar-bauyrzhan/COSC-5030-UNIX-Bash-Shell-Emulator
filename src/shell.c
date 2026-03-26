@@ -159,16 +159,22 @@ char **parse_line(char *line)
             // If we see a single quote, toggle the single_quote flag
             if (*src == '\'')
             {
+                if (single_quote && *(src - 1) == '"')
+                {
+                    *dst++ = ' ';
+                }
                 single_quote = !single_quote;
-                //*dst++ = *src++;
                 src++;
                 continue;
             }
             // If we see a double quote, toggle the double_quote flag
             else if (*src == '"')
             {
+                if (double_quote && *(src - 1) == '"')
+                {
+                    *dst++ = ' ';
+                }
                 double_quote = !double_quote;
-                //*dst++ = *src++;
                 src++;
                 continue;
             }
@@ -181,11 +187,11 @@ char **parse_line(char *line)
                 continue;
             }
             // If we see a backslash and we are not in quotes, just skip it
-            // else if (*src == '\\' && (!single_quote && !double_quote))
-            // {
-            //     src++;
-            //     continue;
-            // }
+            else if (*src == '\\' && (!single_quote && !double_quote))
+            {
+                src++;
+                continue;
+            }
 
             // If we see a backslash and the backslash flag is set, copy the next character as is
             if (backslash)
@@ -226,6 +232,14 @@ char **parse_line(char *line)
     {
         // Get the length of the next token
         int token_length = strlen(cpy_line + i);
+        if (token_length == 1 && *(cpy_line + i) == ' ')
+        {
+            // *(cpy_line + i) = '\0';
+            tokens[position++] = strdup("\0");
+            i += token_length + 1;
+            continue;
+
+        }
         // No more tokens
         if (token_length == 0) {
             break;
