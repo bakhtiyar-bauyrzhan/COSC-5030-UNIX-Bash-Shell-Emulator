@@ -60,33 +60,52 @@ char *redirection_handler(char *line, char *cpy_line)
 
         if (!single_quote && !double_quote)
         {
+            // TODO: Handle patterns like '2>&1' and '2>', not hardcoded
             if (line[i] == '2' && line[i + 1] == '>')
             {
                 if (line[i + 2] == '&' && (line[i + 3] == '1'))
                 {
-                    *dst++ = ' ';
+                    if (*(dst - 1) != ' ' && i != 0)
+                    {
+                        *dst++ = ' ';
+                    }
                     *dst++ = line[i];
                     *dst++ = line[++i];
                     *dst++ = line[++i];
                     *dst++ = line[++i];
-                    *dst++ = ' ';
+                    if (line[i] != ' ')
+                    {
+                        *dst++ = ' ';
+                    }
                     continue;
                 }
-                *dst++ = ' ';
+                if (*(dst - 1) != ' ' && i != 0)
+                {
+                    *dst++ = ' ';
+                }
                 *dst++ = line[i];
                 *dst++ = line[++i];
-                *dst++ = ' ';
+                if (line[i] != ' ')
+                {
+                    *dst++ = ' ';
+                }
                 continue;
             }
             if (line[i] == '>' || line[i] == '<')
             {
-                *dst++ = ' ';
+                if (*(dst - 1) != ' ' && i != 0)
+                {
+                    *dst++ = ' ';
+                }
                 *dst++ = line[i];
                 if (line[i + 1] == '>')
                 {
                     *dst++ = line[++i];
                 }
-                *dst++ = ' ';
+                if (line[i] != ' ')
+                {
+                    *dst++ = ' ';
+                }
                 continue;
             }
         }
@@ -159,7 +178,12 @@ char **parse_line(char *line)
             // If we see a single quote, toggle the single_quote flag
             if (*src == '\'')
             {
-                if (single_quote && *(src - 1) == '"')
+                if (double_quote)
+                {
+                    *dst++ = *src++;
+                    continue;
+                }
+                if (single_quote && *(src - 1) == '\'')
                 {
                     *dst++ = ' ';
                 }
@@ -170,6 +194,11 @@ char **parse_line(char *line)
             // If we see a double quote, toggle the double_quote flag
             else if (*src == '"')
             {
+                if (single_quote)
+                {
+                    *dst++ = *src++;
+                    continue;
+                }
                 if (double_quote && *(src - 1) == '"')
                 {
                     *dst++ = ' ';
@@ -238,10 +267,10 @@ char **parse_line(char *line)
             tokens[position++] = strdup("\0");
             i += token_length + 1;
             continue;
-
         }
         // No more tokens
-        if (token_length == 0) {
+        if (token_length == 0)
+        {
             break;
         }
         // Duplicate the token string and store it in the tokens array
@@ -329,7 +358,6 @@ int execute_builtin(char *command, char **args)
             close(fd_err);
         }
     }
-
     int ret = 0;
 
     if (strcmp(command, "exit") == 0)
